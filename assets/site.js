@@ -1,4 +1,4 @@
-/* NextSIM 홍보 사이트 스크립트: 한/영 전환, 모바일 메뉴, 스크롤 등장, 히어로 시뮬레이션 */
+/* NextSIM 홍보 사이트 스크립트: 한/영 전환, 모바일 메뉴, 홍보 영상, 홈 히어로 · 작업 흐름 */
 
 // ---------------------------------------------------------------- 한/영 전환
 // 사용자 가이드(docs/)와 같은 저장 키를 써서, 사이트와 가이드를 오가도 언어가 유지된다.
@@ -66,4 +66,118 @@
             box.replaceChildren(video);
         }
     });
+})();
+
+// ---------------------------------------------------------------- 홈 히어로
+// 영상 루프는 동작 줄이기 설정이면 첫 장면에서 멈춘다. 홈 헤더는 조금 내리면 바탕이 생긴다.
+(function () {
+    const loop = document.querySelector('.hero__loop');
+    if (loop && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        loop.removeAttribute('autoplay');
+        loop.pause();
+    }
+    const bar = document.querySelector('.topbar--overlay');
+    if (bar) {
+        const onScroll = () => bar.classList.toggle('is-scrolled', window.scrollY > 40);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+    }
+})();
+
+// ---------------------------------------------------------------- 소개 영상 대화 상자
+// [data-open-video="dialog id"] 가 대화 상자를 연다. 닫으면 영상을 멈춘다 (YouTube 는 iframe 주소를 다시 넣어 멈춘다).
+(function () {
+    document.querySelectorAll('[data-open-video]').forEach((btn) => {
+        const dlg = document.getElementById(btn.dataset.openVideo);
+        if (!dlg || typeof dlg.showModal !== 'function') return;
+        const stop = () => {
+            const v = dlg.querySelector('video');
+            if (v) v.pause();
+            const f = dlg.querySelector('iframe');
+            if (f) f.src = f.src;
+        };
+        btn.addEventListener('click', () => {
+            dlg.showModal();
+            const v = dlg.querySelector('video');
+            if (v) v.play().catch(() => { /* 자동 재생이 막히면 사용자가 누른다 */ });
+        });
+        dlg.querySelector('[data-close-video]')?.addEventListener('click', () => dlg.close());
+        dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });  // 바깥(배경) 클릭
+        dlg.addEventListener('close', stop);
+    });
+})();
+
+// ---------------------------------------------------------------- 홈 작업 흐름
+// 화면 가운데에 온 단계를 켜고, 오른쪽 고정 화면의 진행선 · 그림 · 수치 띠 · 설명을 그 단계로 바꾼다.
+// 숫자는 0부터 올라가고 막대는 채워지며, 재생 단계에서는 재생 시각이 08:00~09:00 구간을 돈다.
+(function () {
+    const steps = Array.from(document.querySelectorAll('.story__step'));
+    if (!steps.length || !('IntersectionObserver' in window)) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const shots = Array.from(document.querySelectorAll('.story__frame img'));
+    const nodes = Array.from(document.querySelectorAll('.story__node'));
+    const panels = Array.from(document.querySelectorAll('.story__panel'));
+    const fill = document.querySelector('.story__fill');
+    const caption = document.querySelector('.story__caption');
+    let current = -1;
+    let raf = 0;
+
+    const countUp = (el) => {
+        const end = Number(el.dataset.count);
+        const t0 = performance.now();
+        const tick = (now) => {
+            const k = reduce ? 1 : Math.min(1, (now - t0) / 900);
+            el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US');
+            if (k < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    };
+
+    // 화면 속 재생 시각 08:30:00 에서 출발해 한 시간 구간을 12초에 한 바퀴 돈다
+    const playClock = (panel) => {
+        const clock = panel.querySelector('.story__clock');
+        if (!clock || reduce) return;
+        const head = panel.querySelector('.story__head');
+        const done = panel.querySelector('.story__done');
+        const t0 = performance.now();
+        const tick = (now) => {
+            const sec = (1800 + (now - t0) / 12000 * 3600) % 3600;
+            head.style.left = done.style.width = (sec / 36) + '%';
+            const t = 8 * 3600 + Math.floor(sec);
+            clock.textContent = [t / 3600, t / 60 % 60, t % 60].map((v) => String(Math.floor(v)).padStart(2, '0')).join(':');
+            raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+    };
+
+    const activate = (i) => {
+        if (i === current) return;
+        current = i;
+        cancelAnimationFrame(raf);
+        steps.forEach((s, k) => s.classList.toggle('is-active', k === i));
+        shots.forEach((s, k) => s.classList.toggle('is-on', k === i));
+        nodes.forEach((n, k) => {
+            n.classList.toggle('is-done', k < i);
+            n.classList.toggle('is-now', k === i);
+        });
+        if (fill) fill.style.width = `calc(${i / (nodes.length - 1)} * (100% - 100% / 6))`;
+        panels.forEach((p, k) => {
+            p.classList.toggle('is-on', k === i);
+            // 막대는 꺼진 패널에서 0으로 되돌려 두었다가 켜질 때 다시 채운다
+            p.querySelectorAll('.story__bar i').forEach((b) => { b.style.width = k === i ? b.dataset.w + '%' : '0'; });
+        });
+        const panel = panels[i];
+        if (panel) {
+            panel.querySelectorAll('[data-count]').forEach(countUp);
+            playClock(panel);
+        }
+        // 설명은 단계 그림의 figcaption 을 그대로 옮긴다 (한/영 span 포함)
+        const cap = steps[i].querySelector('figcaption');
+        if (caption && cap) caption.innerHTML = cap.innerHTML;
+    };
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) activate(Number(e.target.dataset.step)); });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach((s) => io.observe(s));
+    activate(0);
 })();
