@@ -189,7 +189,7 @@
     .nav__group { margin-top: 22px; }
 
     .nav__group-label {
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .09em;
@@ -513,6 +513,7 @@
                 <a href="editor-guide.html"><span class="i18n-ko">3. Edit 모드 가이드</span><span class="i18n-en">3. Edit mode guide</span></a>
                 <a href="visualizer-guide.html" aria-current="page"><span class="i18n-ko">4. Run 모드 가이드</span><span class="i18n-en">4. Run mode guide</span></a>
                 <a href="nextci/index.html"><span class="i18n-ko">5. NextCI 가이드</span><span class="i18n-en">5. NextCI guide</span></a>
+                <a href="assistant-guide.html"><span class="i18n-ko">6. Assistant 가이드</span><span class="i18n-en">6. Assistant guide</span></a>
             </div>
             <div class="nav__group">
                 <div class="nav__group-label"><span class="i18n-ko">시작하기</span><span class="i18n-en">Getting started</span></div>
@@ -584,21 +585,22 @@
                 data-local="editor-guide.html"
                >Edit mode
                 guide</a>.</p>
-            <p class="i18n-ko">화면 구성: 상단바 기본 줄(재생 바)에는 NextSIM 로고, <strong>Run | Edit</strong> 모드 전환,
-                <strong>Simulation</strong>(실행·결과 불러오기), 재생 컨트롤(Play/Stop·Speed·Timestep), <strong>Setup</strong>,
-                <strong>Tools</strong>, 도움말(물음표)이 있습니다. <strong>Setup</strong>을 누르면 상단바가
-                <strong>Network</strong>(현재 네트워크 이름 표시, Network 창을 엽니다)·<strong>Run setup</strong>(시나리오·시간·경로 생성)·<strong>Display</strong>
-                줄로, <strong>Tools</strong>를 누르면 검색·<strong>Capture</strong>·<strong>BIMS</strong> 줄로 바뀌고,
-                X 나 <kbd>Esc</kbd>로 재생 바로 돌아옵니다. <kbd>Ctrl</kbd>+<kbd>F</kbd>는 Tools 줄의 검색창을 엽니다. 결과는 중앙 지도에서 재생되고, 링크·노드·차량·정류장을 클릭하면
+            <p class="i18n-ko">화면 구성: 상단바(재생 바)에는 NextSIM 로고, <strong>Run | Edit</strong> 모드 전환,
+                <strong>Simulation</strong>(실행·결과 불러오기), 재생 컨트롤(Play/Stop·Speed·Timestep), 검색창, <strong>Setup</strong>,
+                <strong>Tools</strong>, 도움말(물음표)이 있습니다. <strong>Setup</strong>과 <strong>Tools</strong>는 버튼 아래로 메뉴가 펼쳐지고 상단바는 그대로입니다.
+                <strong>Setup</strong> 메뉴에는 <strong>Network</strong>(현재 네트워크 이름 표시, Network 창을 엽니다)·<strong>Run setup</strong>(시나리오·시간·경로 생성)·<strong>Display</strong>가,
+                <strong>Tools</strong> 메뉴에는 <strong>Save PNG</strong>·<strong>Record video</strong>·<strong>Summary</strong>·<strong>BIMS</strong>가 있고,
+                바깥을 누르거나 <kbd>Esc</kbd>로 닫힙니다. <kbd>Ctrl</kbd>+<kbd>F</kbd>는 상단바 검색창으로 갑니다. 결과는 중앙 지도에서 재생되고, 링크·노드·차량·정류장을 클릭하면
                 상세 정보 패널이 열립니다. 네트워크를 아직 고르지 않았다면 지도 자리에
                 <em>No network loaded</em> 카드와 <strong>Select network</strong> · <strong>Add network</strong> 버튼이 표시됩니다.</p>
-            <p class="i18n-en">Layout: the default top bar (the playback bar) holds the NextSIM logo, the
+            <p class="i18n-en">Layout: the top bar (the playback bar) holds the NextSIM logo, the
                 <strong>Run | Edit</strong> switch, <strong>Simulation</strong> (run, or load a result), the playback
-                controls (Play/Stop, Speed, Timestep), <strong>Setup</strong>, <strong>Tools</strong> and help (question
-                mark). <strong>Setup</strong> turns the bar into <strong>Network</strong> (shows the current network and opens
+                controls (Play/Stop, Speed, Timestep), the search box, <strong>Setup</strong>, <strong>Tools</strong> and help (question
+                mark). <strong>Setup</strong> and <strong>Tools</strong> open a menu under the button and leave the bar as it is.
+                <strong>Setup</strong> holds <strong>Network</strong> (shows the current network and opens
                 the Network dialog), <strong>Run setup</strong> (scenario, time, route generation) and <strong>Display</strong>;
-                <strong>Tools</strong> turns it into search, <strong>Capture</strong> and <strong>BIMS</strong>. X or
-                <kbd>Esc</kbd> returns to the playback bar, and <kbd>Ctrl</kbd>+<kbd>F</kbd> opens the search box in Tools. Results replay on the central map; clicking a link,
+                <strong>Tools</strong> holds <strong>Save PNG</strong>, <strong>Record video</strong>, <strong>Summary</strong> and <strong>BIMS</strong>.
+                Click elsewhere or press <kbd>Esc</kbd> to close a menu, and <kbd>Ctrl</kbd>+<kbd>F</kbd> jumps to the search box. Results replay on the central map; clicking a link,
                 node, vehicle, or station opens a detail panel. Before you pick a network, the map area shows a
                 <em>No network loaded</em> card with <strong>Select network</strong> and <strong>Add network</strong>
                 buttons.</p>
@@ -615,7 +617,7 @@
                     처럼 주소를 입력합니다. 예전 주소인 <code>/simulation/</code>과 <code>/visualizer/</code>는 쿼리를 유지한 채 <code>/nextsim/?mode=run</code>으로 이동합니다.</li>
                 <li>상단바 <strong>Setup</strong> → <strong>Network</strong>(처음에는 <em>Select network</em>로 표시됨)를 눌러 <strong>Network</strong> 창의
                     목록에서 네트워크 폴더를 선택합니다. 그러면 지도에 네트워크가 그려집니다.</li>
-                <li>같은 Setup 줄의 <strong>Run setup</strong>을 열고 <strong>Target scenario</strong>에서 재생할
+                <li>같은 Setup 메뉴의 <strong>Run setup</strong>을 열고 <strong>Target scenario</strong>에서 재생할
                     시나리오를 선택합니다. 시간 범위 등 시나리오 정보가 바로 아래 카드에 표시됩니다.</li>
             </ol>
             <ol class="steps i18n-en">
@@ -628,7 +630,7 @@
                 <li>Click <strong>Setup</strong> → <strong>Network</strong> in the top bar (it reads <em>Select network</em>
                     until you pick one) and choose a network folder from the list in the <strong>Network</strong> dialog — the
                     network is drawn on the map.</li>
-                <li>Open <strong>Run setup</strong> in the same Setup bar and pick the scenario to replay under
+                <li>Open <strong>Run setup</strong> in the same Setup menu and pick the scenario to replay under
                     <strong>Target scenario</strong> — its time range and other details appear in the card just below.</li>
             </ol>
             <p class="i18n-ko"><strong>Network</strong> 창에는 네트워크 목록과 새로고침 버튼, <strong>Add network</strong>(Edit 모드로
@@ -1120,20 +1122,20 @@
                 <li><strong>카메라</strong>: 왼쪽 드래그 = 이동, 오른쪽 드래그 = 회전·기울기(Top 에서는 이동), 휠 = 확대.
                     <kbd>T</kbd> Drone/Top 전환, <kbd>F</kbd> 전체 맞춤,
                     <kbd>Esc</kbd> 따라가기 해제.</li>
-                <li><strong>Bldg</strong>(<kbd>B</kbd>): OSM 건물. 건물 자료가 있는 네트워크만 켜집니다
-                    (<span class="mono">viewer3d/tools/fetch_buildings.py</span>로 받습니다).</li>
+                <li><strong>Bldg</strong>(<kbd>B</kbd>): OSM 또는 VWorld 건물. 건물 자료가 있는 네트워크만 켜집니다
+                    (Display 패널 <strong>Buildings</strong>에서 출처를 고르고 <strong>Fetch</strong>로 받습니다. VWorld 는 위성 배경에 넣은 인증키를 씁니다).</li>
                 <li><strong>Sat</strong>(<kbd>S</kbd>): 2D 위성 배경(Display 패널)을 켜고 끄며, 켜면 3D 지면에도 깝니다. 정합 정보가 있는 네트워크만 켜집니다.</li>
                 <li><kbd>K</kbd> 카메라 위치 추가 · <kbd>G</kbd> 그 경로로 비행 (+Key / Path / Clear).
-                    화면 저장과 녹화는 2D 와 같이 상단바 <strong>Capture</strong>에서 합니다.</li>
+                    화면 저장과 녹화는 2D 와 같이 상단바 <strong>Tools</strong> 메뉴에서 합니다.</li>
             </ul>
             <ul class="i18n-en">
                 <li><strong>Camera</strong> — left drag moves, right drag rotates and tilts (moves in Top), wheel zooms.
                     <kbd>T</kbd> Drone/Top, <kbd>F</kbd> fit, <kbd>Esc</kbd> stop following.</li>
-                <li><strong>Bldg</strong> (<kbd>B</kbd>) — OSM buildings, for networks that have building data
-                    (fetched with <span class="mono">viewer3d/tools/fetch_buildings.py</span>).</li>
+                <li><strong>Bldg</strong> (<kbd>B</kbd>) — OSM or VWorld buildings, for networks that have building data
+                    (pick a source under <strong>Buildings</strong> in the Display panel and press <strong>Fetch</strong>; VWorld uses the key entered for the satellite basemap).</li>
                 <li><strong>Sat</strong> (<kbd>S</kbd>) — turns the 2D satellite basemap (Display panel) on or off; when on it is also laid on the 3D ground. Needs a georeferenced network.</li>
                 <li><kbd>K</kbd> adds a camera key and <kbd>G</kbd> flies the path (+Key / Path / Clear).
-                    Pictures and recordings use <strong>Capture</strong> in the top bar, as in 2D.</li>
+                    Pictures and recordings use the <strong>Tools</strong> menu in the top bar, as in 2D.</li>
             </ul>
             <p class="i18n-ko">WebGL 을 쓸 수 없는 브라우저에서는 처음 3D 를 켤 때 이유가 표시되고, 그 뒤로 3D 버튼이 꺼집니다.</p>
             <p class="i18n-en">If the browser cannot start WebGL, the first try says why and the 3D button is then disabled.</p>
@@ -1142,11 +1144,11 @@
         <!-- ================================================== 캡처 -->
         <section id="capture">
             <h2><span class="i18n-ko">화면 저장과 녹화</span><span class="i18n-en">Pictures and recordings</span></h2>
-            <p class="i18n-ko">상단바 <strong>Tools → Capture</strong>에서 지금 보이는 지도를 저장합니다. 2D·3D 모두 됩니다.
+            <p class="i18n-ko">상단바 <strong>Tools</strong> 메뉴에서 지금 보이는 지도를 저장합니다. 2D·3D 모두 됩니다.
                 <strong>Save PNG</strong>(<kbd>P</kbd>)는 그림 한 장, <strong>Record video</strong>(<kbd>R</kbd>)는 다시 누를 때까지 녹화합니다(최대 10분, WebM).
                 녹화 중에는 지도 위쪽 가운데에 <strong>REC</strong> 카드(경과 시간과 <strong>Stop</strong> 버튼)가 뜨고, 2D·3D 를 바꾸거나 Edit 로 넘어가면 그때까지 녹화한 파일을 저장합니다.
                 2D 에서는 위성 배경 타일을 읽을 수 없어 저장본에서 빠집니다.</p>
-            <p class="i18n-en"><strong>Tools → Capture</strong> in the top bar saves the map as it is on screen, in 2D or 3D.
+            <p class="i18n-en">The <strong>Tools</strong> menu in the top bar saves the map as it is on screen, in 2D or 3D.
                 <strong>Save PNG</strong> (<kbd>P</kbd>) saves one picture and <strong>Record video</strong> (<kbd>R</kbd>)
                 records until you press it again (up to 10 minutes, WebM). While recording, a <strong>REC</strong> card with the
                 elapsed time and a <strong>Stop</strong> button sits at the top centre of the map;

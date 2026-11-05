@@ -225,7 +225,7 @@ p { margin: 0; }
         align-items: stretch;
         gap: 2px;
         padding: 12px 24px 20px;
-        background: rgba(5, 6, 15, .96);
+        background: var(--canvas);
         box-shadow: inset 0 -1px 0 var(--edge);
     }
     .sitenav.is-open { display: flex; }
@@ -365,7 +365,7 @@ p { margin: 0; }
 .section__head p { color: var(--fog); font-size: 17px; }
 
 @media (max-width: 700px) {
-    :root { --section: 80px; }
+    :root { --section: 64px; }
     .section__head { margin-bottom: 36px; }
 }
 
@@ -416,6 +416,11 @@ p { margin: 0; }
     padding-bottom: 2px;
 }
 .textlink:hover { border-bottom-color: var(--frost); }
+/* 터치 화면에서는 글자 링크의 누르는 영역을 모양은 그대로 두고 넓힌다 */
+@media (pointer: coarse) {
+    .textlink, .footer a { position: relative; }
+    .textlink::after, .footer a::after { content: ""; position: absolute; inset: -12px -8px; }
+}
 
 /* ---------- 도구 ---------- */
 .tool {
@@ -643,6 +648,14 @@ p { margin: 0; }
     .story__shot { display: block; }
     .story__shot img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--edge-strong); }
     .story__shot figcaption { margin-top: 8px; color: var(--fog); font-size: 13px; }
+    /* 그림 바로 아래의 수치 띠 (site.js 가 넣는다) */
+    .story__shot .story__panel { visibility: visible; opacity: 1; gap: 10px; padding: 14px 0 4px; }
+    .story__dhead { flex-wrap: wrap; gap: 2px 12px; font-size: 11px; }
+    .story__dhead b { margin-left: auto; }
+    .story__nums { gap: 8px 28px; }
+    .story__cells { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 4px; }
+    .story__chart { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .story__chart svg { height: 64px; }
 }
 
 /* ---------- 홈: 모듈 (선으로 나눈 줄, 화면이 있는 모듈은 그림을 붙인다) ---------- */

@@ -1,0 +1,992 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script>
+    /* 사이트 사본 전용 (build.sh 가 맨 앞에 붙인다): ?lang= 과 브라우저 언어를 따른다.
+       저장된 선택이 있으면 가이드 원래 스크립트가 그 값을 쓴다. */
+    (function () {
+        var fallback = /^ko\b/i.test(navigator.language || '') ? 'ko' : 'en';
+        var lang = null;
+        try {
+            var q = new URLSearchParams(window.location.search).get('lang');
+            if (q === 'en' || q === 'ko') {
+                lang = q;
+                window.localStorage.setItem('nextsim-doc-lang', q);
+            } else if (!window.localStorage.getItem('nextsim-doc-lang')) {
+                lang = fallback;
+            }
+        } catch (e) { lang = fallback; }
+        if (lang) {
+            document.documentElement.setAttribute('data-lang', lang);
+            document.documentElement.setAttribute('lang', lang);
+        }
+    })();
+</script>
+<title>NextSIM Assistant Guide</title>
+<link rel="icon" href="../assets/logo/favicon.svg" type="image/svg+xml">
+<script>
+    /* 언어 선택을 body 파싱 전에 적용해 잘못된 언어가 잠깐 보이는 것을 막는다.
+       기본값은 ko 이며, CSS 가 :root:not([data-lang="en"]) 로 한국어를 기본 표시하므로
+       JS 가 꺼져 있어도 한국어 문서로 읽힌다. */
+    (function () {
+        try {
+            var saved = window.localStorage.getItem('nextsim-doc-lang');
+            if (saved === 'en' || saved === 'ko') document.documentElement.setAttribute('data-lang', saved);
+        } catch (e) { /* 스토리지 차단 환경 무시 */ }
+    })();
+</script>
+
+<style>
+    /* ---------- 토큰: 라이트(기본) ---------- */
+    :root {
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-2: #eef2f9;
+        --ink: #182338;
+        --muted: #5b6a83;
+        --hairline: rgba(24, 35, 56, .13);
+        --accent: #2456c4;
+        --accent-soft: rgba(36, 86, 196, .1);
+        --accent-strong: #1c3f96;
+        --kbd-bg: #eef2f9;
+        --kbd-ink: #33415c;
+        --code-bg: #edf1f8;
+        --tip-bg: rgba(21, 128, 61, .08);
+        --tip-edge: #15803d;
+        --warn-bg: rgba(180, 83, 9, .09);
+        --warn-edge: #b45309;
+        --hue-run: #1d4ed8;
+        --hue-play: #0369a1;
+        --hue-display: #b45309;
+        --hue-inspect: #15803d;
+        --hue-summary: #6d28d9;
+        --shadow: 0 10px 30px rgba(24, 35, 56, .07);
+    }
+
+    /* ---------- 다크: 시스템 설정 (명시적 light 선택이 이김) ---------- */
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --bg: #0d1424;
+            --surface: #141d31;
+            --surface-2: #1a2440;
+            --ink: #e7edf9;
+            --muted: #97a6c1;
+            --hairline: rgba(231, 237, 249, .14);
+            --accent: #7da4f7;
+            --accent-soft: rgba(125, 164, 247, .14);
+            --accent-strong: #a9c3fb;
+            --kbd-bg: #1e2946;
+            --kbd-ink: #c3cfe6;
+            --code-bg: #1a2440;
+            --tip-bg: rgba(74, 222, 128, .1);
+            --tip-edge: #4ade80;
+            --warn-bg: rgba(251, 191, 36, .11);
+            --warn-edge: #fbbf24;
+            --hue-run: #93b4fd;
+            --hue-play: #67c3f0;
+            --hue-display: #f2b26b;
+            --hue-inspect: #7fd8a2;
+            --hue-summary: #c4a7f7;
+            --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+    }
+
+    /* ---------- 다크: 명시적 토글 ---------- */
+    :root[data-theme="dark"] {
+        --bg: #0d1424;
+        --surface: #141d31;
+        --surface-2: #1a2440;
+        --ink: #e7edf9;
+        --muted: #97a6c1;
+        --hairline: rgba(231, 237, 249, .14);
+        --accent: #7da4f7;
+        --accent-soft: rgba(125, 164, 247, .14);
+        --accent-strong: #a9c3fb;
+        --kbd-bg: #1e2946;
+        --kbd-ink: #c3cfe6;
+        --code-bg: #1a2440;
+        --tip-bg: rgba(74, 222, 128, .1);
+        --tip-edge: #4ade80;
+        --warn-bg: rgba(251, 191, 36, .11);
+        --warn-edge: #fbbf24;
+        --hue-run: #93b4fd;
+        --hue-play: #67c3f0;
+        --hue-display: #f2b26b;
+        --hue-inspect: #7fd8a2;
+        --hue-summary: #c4a7f7;
+        --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+    }
+
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.72;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    code, kbd, .file-chip, .mono {
+        font-family: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, "Nanum Gothic Coding", monospace;
+    }
+
+    .shell {
+        display: grid;
+        grid-template-columns: 252px minmax(0, 1fr);
+        max-width: 1120px;
+        margin: 0 auto;
+        gap: 0 48px;
+        padding: 0 28px;
+    }
+
+    .nav {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100dvh;
+        overflow-y: auto;
+        padding: 34px 0 40px;
+        scrollbar-width: thin;
+    }
+
+    .nav__brand {
+        font-weight: 800;
+        font-size: 17px;
+        letter-spacing: -.01em;
+        margin-bottom: 2px;
+    }
+
+    .nav__brand small {
+        display: block;
+        font-weight: 500;
+        font-size: 11.5px;
+        color: var(--muted);
+        letter-spacing: .02em;
+        margin-top: 3px;
+    }
+
+    /* 로고: 밝은 / 어두운 테마에 맞는 판을 하나만 보인다 (원본 img/logo/) */
+    .nav__brand { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
+    .nav__brand small { flex-basis: 100%; }
+    .nav__logo img { display: block; width: auto; height: 28px; }
+    .nav__logo .nav__logo-dark { display: none; }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .nav__logo .nav__logo-light { display: none; }
+        :root:not([data-theme="light"]) .nav__logo .nav__logo-dark { display: block; }
+    }
+    :root[data-theme="dark"] .nav__logo .nav__logo-light { display: none; }
+    :root[data-theme="dark"] .nav__logo .nav__logo-dark { display: block; }
+    .nav__product { padding-left: 8px; border-left: 1px solid var(--hairline); font-size: 14px; line-height: 18px; }
+
+    .nav__group { margin-top: 22px; }
+
+    .nav__group-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    .nav a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 10px;
+        margin-left: -10px;
+        border-radius: 7px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+
+    .nav a:hover { color: var(--ink); background: var(--accent-soft); }
+
+    .nav a.is-active {
+        color: var(--accent-strong);
+        background: var(--accent-soft);
+        font-weight: 600;
+    }
+
+    .nav a:focus-visible, a:focus-visible, button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    .ws-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        background: var(--dot, var(--muted));
+    }
+
+    .content { padding: 40px 0 90px; min-width: 0; }
+
+    .masthead {
+        border-bottom: 1px solid var(--hairline);
+        padding-bottom: 26px;
+        margin-bottom: 8px;
+    }
+
+    .masthead h1 {
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -.022em;
+        margin: 0 0 10px;
+        text-wrap: balance;
+    }
+
+    .masthead p {
+        max-width: 62ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 15.5px;
+    }
+
+    .masthead .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+    }
+
+    .chip {
+        display: inline-block;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--muted);
+        border: 1px solid var(--hairline);
+    }
+
+    a.chip { text-decoration: none; }
+    a.chip:hover { color: var(--accent-strong); border-color: var(--accent); }
+
+    section { padding-top: 44px; }
+
+    section > h2 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -.015em;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-wrap: balance;
+    }
+
+    h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 30px 0 8px;
+        letter-spacing: -.008em;
+    }
+
+    p, ul, ol { max-width: 72ch; }
+    p { margin: 10px 0; }
+    ul, ol { margin: 8px 0; padding-left: 22px; }
+    li { margin: 4px 0; }
+    li::marker { color: var(--muted); }
+
+    a { color: var(--accent-strong); }
+
+    .ws-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .04em;
+        padding: 3px 10px;
+        border-radius: 999px;
+        color: var(--ws, var(--accent-strong));
+        background: color-mix(in srgb, var(--ws, var(--accent)) 13%, transparent);
+    }
+
+    .file-chip {
+        display: inline-block;
+        font-size: 12px;
+        background: var(--code-bg);
+        border: 1px solid var(--hairline);
+        border-radius: 6px;
+        padding: 1.5px 8px;
+        white-space: nowrap;
+    }
+
+    kbd {
+        display: inline-block;
+        min-width: 20px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--kbd-ink);
+        background: var(--kbd-bg);
+        border: 1px solid var(--hairline);
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        padding: 1px 7px;
+    }
+
+    code {
+        font-size: 13px;
+        background: var(--code-bg);
+        border-radius: 5px;
+        padding: 1.5px 6px;
+    }
+
+    .tip, .warn {
+        max-width: 72ch;
+        border: 1px solid var(--hairline);
+        background: var(--tip-bg);
+        border-radius: 8px;
+        padding: 11px 16px;
+        margin: 14px 0;
+        font-size: 14px;
+    }
+
+    .warn { background: var(--warn-bg); }
+    .tip > strong:first-child { color: var(--tip-edge); }
+    .warn > strong:first-child { color: var(--warn-edge); }
+
+    .tablewrap { overflow-x: auto; margin: 14px 0; }
+
+    table {
+        border-collapse: collapse;
+        font-size: 13.5px;
+        min-width: 520px;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px 14px 8px 0;
+        border-bottom: 1px solid var(--hairline);
+        vertical-align: top;
+    }
+
+    th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: var(--muted);
+        font-weight: 700;
+    }
+
+    ol.steps {
+        list-style: none;
+        counter-reset: step;
+        padding-left: 0;
+        margin: 12px 0;
+    }
+
+    ol.steps > li {
+        counter-increment: step;
+        position: relative;
+        padding-left: 38px;
+        margin: 10px 0;
+    }
+
+    ol.steps > li::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 1px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        font-size: 12.5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 혼잡도 범례 재현 */
+    .ci-scale {
+        display: flex;
+        gap: 0;
+        max-width: 420px;
+        margin: 12px 0;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--hairline);
+    }
+
+    .ci-scale span {
+        flex: 1;
+        padding: 7px 4px 6px;
+        text-align: center;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #1a2333;
+        background: var(--sw, #ccc);
+        line-height: 1.35;
+    }
+
+    .ci-scale span em { display: block; font-style: normal; font-weight: 500; font-size: 10px; }
+
+    .divider { border: 0; border-top: 1px solid var(--hairline); margin: 44px 0 0; }
+
+    footer {
+        margin-top: 60px;
+        padding-top: 18px;
+        border-top: 1px solid var(--hairline);
+        color: var(--muted);
+        font-size: 12.5px;
+    }
+
+    @media (max-width: 900px) {
+        .shell { grid-template-columns: 1fr; gap: 0; }
+        .nav { position: static; height: auto; padding-bottom: 0; }
+        .nav__links { display: flex; flex-wrap: wrap; gap: 2px 10px; }
+        .nav__group { margin-top: 12px; }
+    }
+
+    /* ---------- 한/영 전환 ---------- */
+    /* 기본(속성 없음)은 한국어. JS 없이도 한국어 문서로 읽힌다. */
+    :root:not([data-lang="en"]) .i18n-en { display: none !important; }
+    :root[data-lang="en"] .i18n-ko { display: none !important; }
+
+    .lang-switch {
+        display: inline-flex;
+        margin-top: 10px;
+        border: 1px solid var(--hairline);
+        border-radius: 999px;
+        background: var(--surface);
+        overflow: hidden;
+    }
+    .lang-switch button {
+        appearance: none;
+        border: 0;
+        padding: 4px 12px;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        cursor: pointer;
+    }
+    .lang-switch button + button { border-left: 1px solid var(--hairline); }
+    .lang-switch button:hover { color: var(--ink); }
+    .lang-switch button[aria-pressed="true"] {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    /* ---------- 사용자 가이드 문서 묶음 (모든 가이드 공통) ---------- */
+    .nav a[aria-current="page"] {
+        color: var(--accent-strong);
+        background: var(--accent-soft);
+        font-weight: 700;
+    }
+    .site-home { display: inline-block; margin: 8px 0 2px; font-size: 12.5px; font-weight: 600; color: var(--muted); text-decoration: none; }
+    .site-home:hover { color: var(--accent-strong); }
+</style>
+
+<div class="shell">
+    <nav class="nav" id="docNav">
+        <div class="nav__brand"><span class="nav__logo"><img class="nav__logo-light" src="../assets/logo/NextSIM_horizontal_color_on-light.svg" alt="NextSIM" width="100" height="28"><img class="nav__logo-dark" src="../assets/logo/NextSIM_horizontal_color_on-dark.svg" alt="NextSIM" width="100" height="28"></span><span class="nav__product">Assistant</span><small><span class="i18n-ko">사용자 가이드 · KAIST AIxMobility Lab</span><span class="i18n-en">User Guide · KAIST AIxMobility Lab</span></small></div>
+        <a class="site-home" href="../index.html"><span class="i18n-ko">← NextSIM 홈페이지</span><span class="i18n-en">← NextSIM website</span></a>
+        <div class="lang-switch" role="group" aria-label="Language / 언어">
+            <button type="button" data-lang="ko" aria-pressed="true">한국어</button>
+            <button type="button" data-lang="en" aria-pressed="false">English</button>
+        </div>
+        <div class="nav__links">
+            <div class="nav__group doc-set">
+                <div class="nav__group-label"><span class="i18n-ko">사용자 가이드</span><span class="i18n-en">User guide</span></div>
+                <a href="index.html"><span class="i18n-ko">1. 개요</span><span class="i18n-en">1. Overview</span></a>
+                <a href="installation.html"><span class="i18n-ko">2. 설치</span><span class="i18n-en">2. Installation</span></a>
+                <a href="editor-guide.html"><span class="i18n-ko">3. Edit 모드 가이드</span><span class="i18n-en">3. Edit mode guide</span></a>
+                <a href="visualizer-guide.html"><span class="i18n-ko">4. Run 모드 가이드</span><span class="i18n-en">4. Run mode guide</span></a>
+                <a href="nextci/index.html"><span class="i18n-ko">5. NextCI 가이드</span><span class="i18n-en">5. NextCI guide</span></a>
+                <a href="assistant-guide.html" aria-current="page"><span class="i18n-ko">6. Assistant 가이드</span><span class="i18n-en">6. Assistant guide</span></a>
+            </div>
+            <div class="nav__group">
+                <div class="nav__group-label"><span class="i18n-ko">시작하기</span><span class="i18n-en">Getting started</span></div>
+                <a href="#overview"><span class="i18n-ko">Assistant 소개</span><span class="i18n-en">What it does</span></a>
+                <a href="#setup" style="--dot: var(--hue-run)"><span class="ws-dot"></span><span class="i18n-ko">처음 설정</span><span class="i18n-en">First-time setup</span></a>
+                <a href="#panel"><span class="i18n-ko">패널 구성</span><span class="i18n-en">The panel</span></a>
+            </div>
+            <div class="nav__group">
+                <div class="nav__group-label"><span class="i18n-ko">쓰는 법</span><span class="i18n-en">Using it</span></div>
+                <a href="#asking" style="--dot: var(--hue-inspect)"><span class="ws-dot"></span><span class="i18n-ko">질문과 결과 카드</span><span class="i18n-en">Questions and cards</span></a>
+                <a href="#commands"><span class="i18n-ko">/ 명령</span><span class="i18n-en">/ commands</span></a>
+                <a href="#runs" style="--dot: var(--hue-play)"><span class="ws-dot"></span><span class="i18n-ko">실행과 비교</span><span class="i18n-en">Runs and comparisons</span></a>
+                <a href="#batch" style="--dot: var(--hue-play)"><span class="ws-dot"></span><span class="i18n-ko">배치 실험</span><span class="i18n-en">Batch experiments</span></a>
+                <a href="#editing" style="--dot: var(--hue-display)"><span class="ws-dot"></span><span class="i18n-ko">편집과 Accept</span><span class="i18n-en">Editing with Accept</span></a>
+                <a href="#view"><span class="i18n-ko">지도·3D·캡처</span><span class="i18n-en">Map, 3D and capture</span></a>
+            </div>
+            <div class="nav__group">
+                <div class="nav__group-label"><span class="i18n-ko">참고</span><span class="i18n-en">Reference</span></div>
+                <a href="#conversations"><span class="i18n-ko">대화 기록</span><span class="i18n-en">Conversations</span></a>
+                <a href="#privacy" style="--dot: var(--hue-summary)"><span class="ws-dot"></span><span class="i18n-ko">보내는 데이터와 비용</span><span class="i18n-en">Data and cost</span></a>
+                <a href="#faq"><span class="i18n-ko">FAQ · 문제 해결</span><span class="i18n-en">FAQ &amp; troubleshooting</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content">
+        <div class="masthead">
+            <h1><span class="i18n-ko">NextSIM Assistant 가이드</span><span class="i18n-en">NextSIM Assistant Guide</span></h1>
+            <p class="i18n-ko">홈 화면과 NextSIM 화면 오른쪽의 <strong>Assistant</strong> 패널에 말로 묻고 시킵니다.
+                결과에서 막히는 곳을 찾고, 시뮬레이션을 돌려 비교하고, seed를 바꿔 여러 번 돌린 평균을 내고,
+                링크·신호·노선을 고치는 일까지 할 수 있습니다. 숫자는 늘 결과 DB와 입력 파일을 조회한 값만 씁니다.</p>
+            <p class="i18n-en">Ask the <strong>Assistant</strong> panel on the right of the home page and the NextSIM page,
+                in plain words. It finds where a result is congested, runs and compares simulations, repeats a run with
+                several seeds, and edits links, signals and transit lines. Every number it gives comes from a query of the
+                result database or the input files.</p>
+            <div class="meta">
+                <span class="chip"><span class="i18n-ko">2026-11 기준</span><span class="i18n-en">As of 2026-11</span></span>
+                <span class="chip"><span class="i18n-ko">본인의 Anthropic 또는 OpenAI API 키 필요</span><span class="i18n-en">Needs your own Anthropic or OpenAI API key</span></span>
+                <a class="chip" href="visualizer-guide.html"><span class="i18n-ko">Run 모드 가이드 →</span><span class="i18n-en">Run mode guide →</span></a>
+            </div>
+        </div>
+
+        <!-- ================================================== 소개 -->
+        <section id="overview">
+            <h2><span class="i18n-ko">Assistant 소개</span><span class="i18n-en">What the Assistant does</span></h2>
+            <p class="i18n-ko">Assistant는 지금 열린 화면 안에서 일합니다. 홈에서는 네트워크를 설명하고 알맞은 화면으로 안내하며,
+                NextSIM에서는 Run 모드(결과 재생)와 Edit 모드(입력 편집) 양쪽에서 씁니다. 다른 모듈(NextAssess, NextDTA, ScenarioLab 등)에는
+                아직 패널이 없습니다.</p>
+            <p class="i18n-en">The Assistant works inside the screen you have open. On the home page it describes networks
+                and points you to the right screen; in NextSIM it works in both Run mode (replaying a result) and Edit mode
+                (editing inputs). Other modules (NextAssess, NextDTA, ScenarioLab and so on) do not have the panel yet.</p>
+            <div class="tablewrap i18n-ko"><table>
+                <thead><tr><th>할 수 있는 일</th><th>예</th></tr></thead>
+                <tbody>
+                    <tr><td>네트워크·결과 질문</td><td>"부천 네트워크 설명해줘", "제일 막히는 링크 어디야?", "정류장 배차 간격이 들쭉날쭉한 곳은?"</td></tr>
+                    <tr><td>실행과 비교</td><td>"seed 7로 다시 돌려서 비교해줘"</td></tr>
+                    <tr><td>배치 실험</td><td>"seed 5개로 반복해서 평균이랑 신뢰구간 보여줘", "시나리오 1과 3을 seed 5개로 비교해줘"</td></tr>
+                    <tr><td>편집</td><td>"이 링크 차로를 4개로 늘려줘", "정류장 두 곳을 잇는 버스 노선 만들어줘", "수요 10% 올린 시나리오 만들어줘"</td></tr>
+                    <tr><td>화면 조작</td><td>"8시 15분으로 옮겨줘", "이 교차로 3D로 보여줘", "지금 화면 캡처해줘"</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tablewrap i18n-en"><table>
+                <thead><tr><th>What</th><th>For example</th></tr></thead>
+                <tbody>
+                    <tr><td>Questions on networks and results</td><td>"Describe the bucheon network", "Where is the worst congestion?", "Which stops have the most irregular headways?"</td></tr>
+                    <tr><td>Runs and comparisons</td><td>"Run again with seed 7 and compare"</td></tr>
+                    <tr><td>Batch experiments</td><td>"Repeat with 5 seeds and show the mean and confidence interval", "Compare scenarios 1 and 3 over 5 seeds"</td></tr>
+                    <tr><td>Edits</td><td>"Give this link 4 lanes", "Make a bus line between these two stops", "Make a scenario with 10% more demand"</td></tr>
+                    <tr><td>Moving the screen</td><td>"Go to 08:15", "Show this intersection in 3D", "Save a picture of the map"</td></tr>
+                </tbody>
+            </table></div>
+            <p class="i18n-ko">Assistant는 파일을 직접 저장하거나 지우지 않고, 명령줄도 실행하지 않습니다. 실행과 편집은 화면의 카드에서
+                사용자가 누른 뒤에만 일어나고, 편집한 내용은 평소처럼 저장해야 파일에 남습니다.</p>
+            <p class="i18n-en">The Assistant never saves or deletes files on its own and runs no shell commands. Runs and
+                edits happen only after you press a button on a card, and edits reach the files only when you save them,
+                as with any other edit.</p>
+        </section>
+
+        <!-- ================================================== 설정 -->
+        <section id="setup">
+            <h2><span class="ws-badge" style="--ws: var(--hue-run)">Setup</span> <span class="i18n-ko">처음 설정</span><span class="i18n-en">First-time setup</span></h2>
+            <ol class="steps i18n-ko">
+                <li>상단바의 <strong>Assistant</strong> 버튼을 누르거나 <kbd>Ctrl</kbd>+<kbd>J</kbd>로 패널을 엽니다.</li>
+                <li>처음에는 <strong>Before you start</strong> 카드가 뜹니다. 어떤 데이터가 바깥 AI 서비스로 가는지 읽고
+                    <strong>I understand, continue</strong>를 누릅니다(<a href="#privacy">보내는 데이터</a>).</li>
+                <li>패널 위쪽 톱니바퀴(<strong>Assistant settings</strong>)를 엽니다. <strong>AI provider</strong>에서
+                    <strong>Anthropic API key</strong> 또는 <strong>OpenAI API key</strong>를 고르고, 키를 붙여 넣은 뒤 <strong>Save</strong>를 누릅니다.
+                    키는 console.anthropic.com 또는 platform.openai.com에서 만듭니다.</li>
+                <li>입력창에 질문을 쓰고 <kbd>Enter</kbd>로 보냅니다. 줄을 바꾸려면 <kbd>Shift</kbd>+<kbd>Enter</kbd>입니다.</li>
+            </ol>
+            <ol class="steps i18n-en">
+                <li>Press <strong>Assistant</strong> in the top bar, or <kbd>Ctrl</kbd>+<kbd>J</kbd>.</li>
+                <li>The first time, a <strong>Before you start</strong> card explains what is sent to the outside AI
+                    service. Read it and press <strong>I understand, continue</strong> (<a href="#privacy">data sent</a>).</li>
+                <li>Open the cog (<strong>Assistant settings</strong>) at the top of the panel. Under <strong>AI provider</strong>
+                    choose <strong>Anthropic API key</strong> or <strong>OpenAI API key</strong>, paste the key and press
+                    <strong>Save</strong>. Keys are made at console.anthropic.com or platform.openai.com.</li>
+                <li>Type a question and press <kbd>Enter</kbd>. <kbd>Shift</kbd>+<kbd>Enter</kbd> starts a new line.</li>
+            </ol>
+            <div class="tablewrap i18n-ko"><table>
+                <thead><tr><th>설정</th><th>뜻</th></tr></thead>
+                <tbody>
+                    <tr><td>Model</td><td>제공자의 모델 이름. 비워 두면 기본 모델을 씁니다.</td></tr>
+                    <tr><td>Effort</td><td>low · medium · high. 높을수록 오래 생각하고 토큰을 더 씁니다.</td></tr>
+                    <tr><td>Tool calls per answer</td><td>답 하나에서 부를 수 있는 도구 수 (기본 12).</td></tr>
+                    <tr><td>Tokens per conversation</td><td>대화 하나의 토큰 상한 (기본 1,000,000). 넘으면 새 대화를 시작합니다.</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tablewrap i18n-en"><table>
+                <thead><tr><th>Setting</th><th>Meaning</th></tr></thead>
+                <tbody>
+                    <tr><td>Model</td><td>The provider's model id. Leave it empty for the default.</td></tr>
+                    <tr><td>Effort</td><td>low, medium or high. Higher effort thinks longer and uses more tokens.</td></tr>
+                    <tr><td>Tool calls per answer</td><td>How many tools one answer may call (default 12).</td></tr>
+                    <tr><td>Tokens per conversation</td><td>Token limit of one conversation (default 1,000,000). Start a new conversation when it is reached.</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tip i18n-ko"><strong>키는 이 컴퓨터에만 있습니다.</strong> 설정은 Windows에서는
+                <code>%APPDATA%\NextSim\assistant.json</code>, Linux에서는 <code>~/.config/nextsim/assistant.json</code>에 저장되고
+                페이지로 다시 보내지지 않습니다. 환경 변수 <code>ANTHROPIC_API_KEY</code>·<code>OPENAI_API_KEY</code>가 있으면 그것도 씁니다.</div>
+            <div class="tip i18n-en"><strong>The key stays on this computer.</strong> Settings are stored in
+                <code>%APPDATA%\NextSim\assistant.json</code> on Windows and <code>~/.config/nextsim/assistant.json</code> on
+                Linux, and the key is never sent back to the page. The <code>ANTHROPIC_API_KEY</code> and
+                <code>OPENAI_API_KEY</code> environment variables also work.</div>
+            <p class="i18n-ko">설정의 <strong>Claude subscription</strong>(Claude 구독 로그인)은 공개 설치본에서는 <em>Not available in this build</em>로 꺼져 있습니다.</p>
+            <p class="i18n-en"><strong>Claude subscription</strong> in the settings is off in the public installers
+                (<em>Not available in this build</em>).</p>
+        </section>
+
+        <!-- ================================================== 패널 -->
+        <section id="panel">
+            <h2><span class="i18n-ko">패널 구성</span><span class="i18n-en">The panel</span></h2>
+            <ul class="i18n-ko">
+                <li><strong>위쪽 버튼</strong>: 지난 대화(<strong>Past conversations</strong>), 새 대화(<strong>New conversation</strong>),
+                    설정, 넓히기(차트와 표를 크게 볼 때), 접기(<strong>Collapse to a bar</strong>: 지도 아래 입력 바만 남김), 닫기(대화는 남습니다).</li>
+                <li><strong>맥락 칩</strong>: 입력창 위에 지금 네트워크·모드·시나리오·선택한 링크나 노드·재생 시각이 보입니다.
+                    Assistant는 "이 링크", "여기", "지금"을 이 칩으로 알아듣습니다. 선택과 시각 칩은 × 로 빼고 물을 수 있습니다.</li>
+                <li><strong>입력창</strong>: <em>Ask, or type / for commands</em>. 답하는 동안 보내기 버튼이 <strong>Stop</strong>으로 바뀝니다.
+                    Stop은 답과 그 답이 시작한 실행을 함께 멈춥니다.</li>
+                <li><strong>아래 줄</strong>: 쓰고 있는 제공자와 모델, 이 대화의 토큰 수(Anthropic 키면 대략의 비용),
+                    <strong>Report a wrong answer</strong>.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li><strong>Top buttons</strong>: <strong>Past conversations</strong>, <strong>New conversation</strong>,
+                    settings, widen (for large charts and tables), <strong>Collapse to a bar</strong> (leaves only an input bar
+                    under the map) and close (the conversation stays).</li>
+                <li><strong>Context chips</strong> above the input show the network, mode, scenario, the selected link or node
+                    and the playback time. "This link", "here" and "now" refer to them. Remove the selection or time chip with ×
+                    to ask without it.</li>
+                <li><strong>Input</strong>: <em>Ask, or type / for commands</em>. While an answer is running the send button
+                    turns into <strong>Stop</strong>, which stops the answer and any run it started.</li>
+                <li><strong>Bottom line</strong>: the provider and model, the tokens used in this conversation (with a rough cost
+                    for an Anthropic key) and <strong>Report a wrong answer</strong>.</li>
+            </ul>
+        </section>
+
+        <!-- ================================================== 질문 -->
+        <section id="asking">
+            <h2><span class="ws-badge" style="--ws: var(--hue-inspect)">Ask</span> <span class="i18n-ko">질문과 결과 카드</span><span class="i18n-en">Questions and result cards</span></h2>
+            <p class="i18n-ko">자주 묻는 질문은 숫자를 카드로, 판단을 글로 답합니다. 카드의 숫자는 조회 결과 그대로이고, 글은 두세 문장으로 결론과 다음 할 일을 말합니다.</p>
+            <p class="i18n-en">Common questions are answered with a card for the numbers and a few sentences for the
+                judgement. The card holds the query result as it came back; the text gives the conclusion and a next step.</p>
+            <ul class="i18n-ko">
+                <li><strong>네트워크 카드</strong>: 링크·노드 수, 도로 길이, 신호, 버스·철도 노선, 시나리오 표. 홈에서는 NextSIM으로 여는 버튼이 붙습니다.</li>
+                <li><strong>Run summary</strong>: 생성·완료 차량, 끝날 때 남은 차량, 평균 통행시간·지체·속도, VKT·VHT, 대중교통 수치.</li>
+                <li><strong>표 카드</strong>: 링크·정류장 순위. 행을 누르거나 <strong>Show on map</strong>을 누르면 지도에 순위 번호 핀이 뜨고 그곳으로 이동합니다.</li>
+                <li><strong>시간대 차트</strong>: 링크 몇 개의 지체를 5분 단위 등으로 그립니다. 넓힌 패널에서 보기 좋습니다.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li><strong>Network card</strong>: links, nodes, road length, signals, bus and rail lines, the scenario table.
+                    On the home page it carries a button that opens the network in NextSIM.</li>
+                <li><strong>Run summary</strong>: vehicles generated and completed, vehicles left at the end, mean travel time,
+                    delay and speed, VKT and VHT, transit figures.</li>
+                <li><strong>Table cards</strong>: ranked links or stops. Click a row or <strong>Show on map</strong> to pin the
+                    ranks on the map and move there.</li>
+                <li><strong>Charts</strong>: delay of a few links over time (for example per 5 minutes); easier to read in the
+                    widened panel.</li>
+            </ul>
+            <div class="tip i18n-ko"><strong>어느 결과인지 확인하세요.</strong> 결과 카드 아래에는 그 결과의 네트워크·시나리오·seed가 적힙니다.
+                화면의 네트워크와 다른 결과라면 Assistant가 먼저 알려 줍니다. 답이 틀렸다고 생각되면 <strong>Report a wrong answer</strong>로
+                대화를 이 작업 폴더의 <code>.assistant/reports</code>에 남겨 주세요.</div>
+            <div class="tip i18n-en"><strong>Check which result it is.</strong> Result cards name the network, scenario and
+                seed of the result underneath. If the result belongs to another network than the one on screen, the
+                Assistant says so first. If an answer looks wrong, <strong>Report a wrong answer</strong> keeps a copy of the
+                conversation in <code>.assistant/reports</code> of this workspace.</div>
+        </section>
+
+        <!-- ================================================== 명령 -->
+        <section id="commands">
+            <h2><span class="i18n-ko">/ 명령</span><span class="i18n-en">/ commands</span></h2>
+            <p class="i18n-ko">입력창 맨 앞에 <code>/</code>를 치면 지금 화면에서 쓸 수 있는 명령 목록이 뜹니다. 고르면 인자 안내가 나오고,
+                인자가 없어도 되는 명령은 바로 <kbd>Enter</kbd>로 보냅니다. 홈에서는 <code>/network</code>와 <code>/howto</code>만 뜹니다.</p>
+            <p class="i18n-en">Type <code>/</code> at the start of the input for the commands of this screen. Picking one
+                shows its arguments; commands that need none can be sent with <kbd>Enter</kbd> at once. The home page shows
+                only <code>/network</code> and <code>/howto</code>.</p>
+            <div class="tablewrap i18n-ko"><table>
+                <thead><tr><th>명령</th><th>인자</th><th>하는 일</th></tr></thead>
+                <tbody>
+                    <tr><td><code>/summary</code></td><td></td><td>지금 결과의 KPI 카드와 한두 문장 판단</td></tr>
+                    <tr><td><code>/bottleneck</code></td><td>[시간대] [개수]</td><td>지체가 큰 링크 순위, 지도에 번호 핀</td></tr>
+                    <tr><td><code>/compare</code></td><td>[실행 A] [실행 B]</td><td>두 실행 비교 (기본: 이전 실행과 지금 결과)</td></tr>
+                    <tr><td><code>/run</code></td><td>[시나리오] [seed]</td><td>화면의 네트워크를 실행한 뒤 KPI 카드</td></tr>
+                    <tr><td><code>/batch</code></td><td>[실행 수] [시나리오 A] [시나리오 B]</td><td>seed 여러 개로 반복해 평균과 95% 구간</td></tr>
+                    <tr><td><code>/stops</code></td><td>[노선]</td><td>배차 간격이 고르지 않은 정류장</td></tr>
+                    <tr><td><code>/network</code></td><td>[네트워크]</td><td>네트워크 카드와 설명</td></tr>
+                    <tr><td><code>/howto</code></td><td>[할 일]</td><td>NextSIM에서 그 일을 하는 순서</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tablewrap i18n-en"><table>
+                <thead><tr><th>Command</th><th>Arguments</th><th>What it does</th></tr></thead>
+                <tbody>
+                    <tr><td><code>/summary</code></td><td></td><td>KPI card of the current result and a short verdict</td></tr>
+                    <tr><td><code>/bottleneck</code></td><td>[time window] [count]</td><td>Links ranked by delay, pinned on the map</td></tr>
+                    <tr><td><code>/compare</code></td><td>[run A] [run B]</td><td>Compare two runs (default: the previous run and the current one)</td></tr>
+                    <tr><td><code>/run</code></td><td>[scenario] [seed]</td><td>Run the network on screen, then its KPI card</td></tr>
+                    <tr><td><code>/batch</code></td><td>[runs] [scenario A] [scenario B]</td><td>Repeat with several seeds: mean and 95% interval</td></tr>
+                    <tr><td><code>/stops</code></td><td>[line]</td><td>Stops with the most irregular headways</td></tr>
+                    <tr><td><code>/network</code></td><td>[network]</td><td>Network card and description</td></tr>
+                    <tr><td><code>/howto</code></td><td>[task]</td><td>Steps to do that task in NextSIM</td></tr>
+                </tbody>
+            </table></div>
+        </section>
+
+        <!-- ================================================== 실행 -->
+        <section id="runs">
+            <h2><span class="ws-badge" style="--ws: var(--hue-play)">Run</span> <span class="i18n-ko">실행과 비교</span><span class="i18n-en">Runs and comparisons</span></h2>
+            <p class="i18n-ko">"seed 2로 다시 돌려서 비교해줘"처럼 말하면 Assistant가 <strong>실행 카드</strong>를 띄웁니다. 대화에서 처음 실행할 때는
+                카드의 <strong>Run</strong>을 눌러야 시작하고, 같은 대화의 다음 실행부터는 바로 시작합니다. 진행률은 카드와 Run 모드의 진행 표시에 함께 보이고
+                <strong>Cancel run</strong>으로 멈춥니다.</p>
+            <p class="i18n-en">Say something like "run again with seed 2 and compare" and the Assistant shows a
+                <strong>run card</strong>. The first run of a conversation starts only when you press <strong>Run</strong>;
+                later runs in the same conversation start at once. Progress shows on the card and in Run mode, and
+                <strong>Cancel run</strong> stops it.</p>
+            <ul class="i18n-ko">
+                <li>실행은 <em>저장된</em> 파일로 돕니다. 저장하지 않은 편집이 있으면 카드에 <strong>Run saved files</strong>와
+                    <strong>Save all &amp; run</strong>이 나옵니다. 뒤의 것은 모든 탭을 저장한 뒤 실행합니다.</li>
+                <li>새 결과가 지금 결과를 대신하고, 바로 전 결과는 비교용으로 남습니다(최근 두 개). 오래 둘 결과는 "이 결과 baseline으로 남겨줘"처럼 말하면 이름을 붙여 보관합니다.</li>
+                <li><strong>비교 카드</strong>는 두 실행의 KPI와 차이, 지체가 가장 많이 바뀐 링크를 보여 주고, 두 실행의 입력이 어디서 다른지 적습니다.
+                    seed만 다른 두 실행의 차이는 무작위 변동이므로 결론을 내리려면 <a href="#batch">배치 실험</a>을 쓰세요.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li>Runs use the <em>saved</em> files. With unsaved edits the card offers <strong>Run saved files</strong> and
+                    <strong>Save all &amp; run</strong>, which saves every tab first.</li>
+                <li>The new result replaces the current one; the one before stays for comparison (the last two are kept).
+                    Say "keep this result as baseline" to keep one under a name.</li>
+                <li>The <strong>comparison card</strong> shows both runs' KPIs and the change, the links whose delay changed
+                    most, and where the inputs differ. Two runs that differ only in seed differ by chance, so use a
+                    <a href="#batch">batch experiment</a> before drawing a conclusion.</li>
+            </ul>
+        </section>
+
+        <!-- ================================================== 배치 -->
+        <section id="batch">
+            <h2><span class="ws-badge" style="--ws: var(--hue-play)">Batch</span> <span class="i18n-ko">배치 실험</span><span class="i18n-en">Batch experiments</span></h2>
+            <p class="i18n-ko">같은 입력을 seed만 바꿔 여러 번 돌리고, KPI마다 평균과 95% 신뢰구간, 최솟값–최댓값을 냅니다.
+                "seed 5개로 반복해서 평균 보여줘"나 <code>/batch</code>로 시작합니다.</p>
+            <p class="i18n-en">Runs the same inputs several times with different seeds and reports each KPI's mean, 95%
+                confidence interval and range. Start it with "repeat with 5 seeds and show the mean", or <code>/batch</code>.</p>
+            <ul class="i18n-ko">
+                <li>배치는 오래 걸리므로 대화에서 실행을 허락했어도 <strong>매번</strong> 실행 카드에서 묻습니다.</li>
+                <li>실행마다 저장된 입력을 따로 복사해 돌리므로 <strong>지금 결과와 이전 결과는 그대로</strong> 남습니다. 배치는 KPI만 남기고 실행 파일은 지웁니다.</li>
+                <li>컴퓨터 코어 수에 따라 최대 4개를 동시에 돌립니다. 배치가 도는 동안에는 다른 실행을 시작할 수 없습니다.</li>
+                <li><strong>두 시나리오 비교</strong>: "시나리오 1과 3을 seed 5개로 비교해줘". 같은 seed끼리 짝지어 B − A를 냅니다.</li>
+                <li><strong>편집 전후 비교</strong>: 편집 전에 배치를 한 번 돌리고, 편집·저장 뒤 "아까 배치와 비교해줘"라고 하면 그 배치를 기준으로 비교합니다.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li>A batch takes a while, so the run card asks <strong>every time</strong>, even after you allowed runs in the conversation.</li>
+                <li>Each run works on its own copy of the saved inputs, so <strong>the current and previous results stay as they are</strong>.
+                    A batch keeps only the KPIs and deletes the run files.</li>
+                <li>Up to four runs go at once, depending on the number of CPU cores. No other run can start during a batch.</li>
+                <li><strong>Two scenarios</strong>: "compare scenarios 1 and 3 over 5 seeds" pairs the runs by seed and reports B − A.</li>
+                <li><strong>Before and after an edit</strong>: run a batch before the edit; after editing and saving, "compare
+                    with the earlier batch" uses it as the baseline.</li>
+            </ul>
+            <div class="tip i18n-ko"><strong>회색 차이는 차이가 아닙니다.</strong> 비교 카드의 B − A 아래 ±값은 95% 구간입니다.
+                구간이 0을 넘나들면 회색으로 그려지고, 그 차이는 seed에 따른 흔들림과 구별되지 않습니다. 실행 수를 늘리면 구간이 좁아집니다.</div>
+            <div class="tip i18n-en"><strong>A grey difference is not a difference.</strong> The ± under B − A is the 95%
+                interval. When it crosses 0 the value is grey: it cannot be told apart from seed-to-seed variation. More runs
+                narrow the interval.</div>
+        </section>
+
+        <!-- ================================================== 편집 -->
+        <section id="editing">
+            <h2><span class="ws-badge" style="--ws: var(--hue-display)">Edit</span> <span class="i18n-ko">편집과 Accept</span><span class="i18n-en">Editing with Accept</span></h2>
+            <p class="i18n-ko">Edit 모드에서 "이 링크 차로를 4개로 늘려줘"처럼 말하면 Assistant가 편집을 지도에 미리 적용하고 <strong>변경 카드</strong>를 띄웁니다.
+                Run 모드에서 요청하면 Edit 모드로 넘긴 뒤 편집합니다. 넘어가면서 실행이 취소되거나 결과가 내려가는 경우에는 평소의 확인 창이 뜹니다.</p>
+            <p class="i18n-en">In Edit mode, say for example "give this link 4 lanes": the Assistant applies the edit as a
+                preview on the map and shows a <strong>change card</strong>. Asked in Run mode, it switches to Edit mode first;
+                when switching would cancel a run or unload a result, the usual confirmation dialog appears.</p>
+            <div class="tablewrap i18n-ko"><table>
+                <thead><tr><th>대상</th><th>할 수 있는 편집</th></tr></thead>
+                <tbody>
+                    <tr><td>링크·노드</td><td>차로 수·속도 등 속성 변경, 링크 추가·삭제·방향 뒤집기·나누기, 노드 합치기</td></tr>
+                    <tr><td>신호</td><td>현시 시간·주기·옵셋 변경, 신호 추가</td></tr>
+                    <tr><td>대중교통</td><td>정류장 추가·삭제, 정류장을 잇는 버스 노선 만들기·지우기</td></tr>
+                    <tr><td>시나리오</td><td>시나리오 복제, 행렬별 수요 배율 (예: OD 1 × 1.1)</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tablewrap i18n-en"><table>
+                <thead><tr><th>What</th><th>Edits</th></tr></thead>
+                <tbody>
+                    <tr><td>Links and nodes</td><td>Lanes, speed and other attributes; add, delete, reverse or split links; merge nodes</td></tr>
+                    <tr><td>Signals</td><td>Phase durations, cycle and offset; add a signal</td></tr>
+                    <tr><td>Transit</td><td>Add or delete stops; make or delete a bus line through given stops</td></tr>
+                    <tr><td>Scenarios</td><td>Clone a scenario; demand scale per matrix (for example OD 1 × 1.1)</td></tr>
+                </tbody>
+            </table></div>
+            <ul class="i18n-ko">
+                <li>변경 카드는 <strong>이 편집</strong>(A)과, 그 때문에 다른 입력 파일에 생기는 <strong>연쇄 변경</strong>(B)을 나눠 보여 줍니다.
+                    예: 링크를 나누면 신호 회전과 버스 노선의 링크 목록이 함께 바뀝니다. 묶음마다 <strong>Accept</strong>·<strong>Discard</strong>가 있고,
+                    한 번에 받으려면 <strong>Accept all</strong>을 누릅니다.</li>
+                <li>꼭 필요한 연쇄 변경을 버리면 원래 편집도 같이 취소됩니다. 반쪽만 바뀐 입력이 남지 않게 하기 위해서입니다.</li>
+                <li>받은 뒤에는 카드의 <strong>Undo</strong>나 편집기의 실행 취소로 되돌립니다. 받은 편집은 저장 전까지 탭에 점(●)으로 표시되며,
+                    <kbd>Ctrl</kbd>+<kbd>S</kbd>·Save all 또는 실행 카드의 <strong>Save all &amp; run</strong>으로 저장합니다.</li>
+                <li>카드가 떠 있는 동안 직접 편집해도 됩니다. 이때 <strong>Discard</strong>를 누르면 직접 고친 것도 함께 되돌아가므로
+                    한 번 더 묻습니다(<strong>Keep reviewing</strong> / <strong>Discard anyway</strong>).</li>
+            </ul>
+            <ul class="i18n-en">
+                <li>The change card shows <strong>this edit</strong> (A) apart from the <strong>linked changes</strong> it causes
+                    in other input files (B). Splitting a link, for example, also changes signal turns and the link lists of bus
+                    lines. Each group has <strong>Accept</strong> and <strong>Discard</strong>; <strong>Accept all</strong> takes everything.</li>
+                <li>Discarding a required linked change cancels the original edit too, so no input is left half changed.</li>
+                <li>After accepting, <strong>Undo</strong> on the card or the editor's undo takes it back. Accepted edits show a
+                    dot (●) on their tabs until saved with <kbd>Ctrl</kbd>+<kbd>S</kbd>, Save all, or <strong>Save all &amp; run</strong> on a run card.</li>
+                <li>You may keep editing while the card is open. <strong>Discard</strong> then also undoes your own edits, so it
+                    asks again (<strong>Keep reviewing</strong> / <strong>Discard anyway</strong>).</li>
+            </ul>
+        </section>
+
+        <!-- ================================================== 화면 -->
+        <section id="view">
+            <h2><span class="i18n-ko">지도·3D·캡처</span><span class="i18n-en">Map, 3D and capture</span></h2>
+            <ul class="i18n-ko">
+                <li><strong>지도</strong>: 순위 표를 낸 뒤에는 같은 순서의 번호 핀을 꽂고 그곳으로 이동합니다. 핀은 잠시 뒤 흐려지고, 표의 행을 누르면 다시 켜집니다.</li>
+                <li><strong>재생 시각</strong>: "8시 15분으로 옮겨줘"는 Run 모드에서 결과가 열려 있을 때 재생을 그 시각에 멈춰 둡니다.</li>
+                <li><strong>3D</strong>: "이 교차로 3D로 보여줘"는 Run 모드에서 고른 노드를 3D로 엽니다. "낮은 시점으로", "위에서", "동쪽을 보게"처럼
+                    기울기와 방향을 말할 수 있고, "2D로 돌아가줘"로 돌아옵니다. 3D 조작은 <a href="visualizer-guide.html#view-3d">Run 모드 가이드의 3D 보기</a>와 같습니다.</li>
+                <li><strong>캡처</strong>: "지금 화면 캡처해줘"는 보이는 지도(2D·3D)를 PNG로, "10초 영상으로 떠줘"는 영상(WebM)으로 브라우저 다운로드 폴더에 저장합니다.
+                    움직이는 차량을 담으려면 "8시부터 재생하면서 20초 녹화해줘"처럼 재생을 함께 요청합니다.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li><strong>Map</strong>: after a ranked table the Assistant pins the same ranks on the map and moves there. The
+                    pins fade after a while; clicking a table row brings them back.</li>
+                <li><strong>Playback</strong>: "go to 08:15" stops the playback at that time (Run mode, with a result loaded).</li>
+                <li><strong>3D</strong>: "show this intersection in 3D" opens the selected node in 3D in Run mode. Ask for "a
+                    low view", "from above" or "looking east", and "back to 2D" to return. Camera controls are the same as in
+                    the <a href="visualizer-guide.html#view-3d">3D view of the Run mode guide</a>.</li>
+                <li><strong>Capture</strong>: "save a picture of the map" saves what the map shows (2D or 3D) as PNG, and
+                    "record 10 seconds" saves a video (WebM), both to the browser's downloads folder. For moving traffic, ask
+                    for playback too: "play from 08:00 and record 20 seconds".</li>
+            </ul>
+        </section>
+
+        <!-- ================================================== 대화 -->
+        <section id="conversations">
+            <h2><span class="i18n-ko">대화 기록</span><span class="i18n-en">Conversations</span></h2>
+            <p class="i18n-ko">대화는 이 작업 폴더의 <code>.assistant/conversations</code>에 남습니다. <strong>Past conversations</strong>에서 제목과 내용으로 찾고,
+                이름을 바꾸거나 지울 수 있습니다. 홈에서 시작한 대화는 NextSIM으로 넘어가도 같은 대화로 이어집니다.
+                패널을 닫아도 대화는 남고, 답하는 중에 페이지를 떠나면 그 답은 거기서 멈춥니다(시작한 실행은 서버에서 계속 돕니다).</p>
+            <p class="i18n-en">Conversations are kept in <code>.assistant/conversations</code> of this workspace.
+                <strong>Past conversations</strong> searches titles and messages, and renames or deletes conversations. A
+                conversation started on the home page continues when you move to NextSIM. Closing the panel keeps the
+                conversation; leaving the page during an answer stops the answer there (a run it started keeps going on the server).</p>
+        </section>
+
+        <!-- ================================================== 데이터 -->
+        <section id="privacy">
+            <h2><span class="ws-badge" style="--ws: var(--hue-summary)">Data</span> <span class="i18n-ko">보내는 데이터와 비용</span><span class="i18n-en">Data sent and cost</span></h2>
+            <ul class="i18n-ko">
+                <li><strong>보내는 것</strong>: 사용자가 쓴 글, 화면 상태(모드, 네트워크 이름, 선택, 재생 시각), 결과 요약과 조회 결과, NextSim 가이드 문서.</li>
+                <li><strong>보내지 않는 것</strong>: 네트워크 XML 등 입력 파일 원본, API 키.</li>
+                <li>보내는 곳은 설정에서 고른 제공자(Anthropic 또는 OpenAI)뿐입니다. 연구 데이터를 바깥으로 보내면 안 되는 과제라면 쓰기 전에 확인하세요.</li>
+                <li><strong>비용</strong>은 사용자의 키로 제공자에게 청구됩니다. 질문 하나는 보통 도구 몇 번과 수만 토큰이고, 같은 대화에서는 앞부분이 캐시되어 싸집니다.
+                    대화마다 토큰 상한이 있어 정해 둔 양을 넘지 않습니다.</li>
+            </ul>
+            <ul class="i18n-en">
+                <li><strong>Sent</strong>: your messages, the screen state (mode, network name, selection, playback time),
+                    result summaries and query results, and NextSim guide text.</li>
+                <li><strong>Not sent</strong>: the input files themselves (network XML and so on) and your API key.</li>
+                <li>Data goes only to the provider chosen in the settings (Anthropic or OpenAI). Check first if your project
+                    does not allow research data to leave the lab.</li>
+                <li><strong>Cost</strong> is billed by the provider to your key. A question usually takes a few tool calls and
+                    tens of thousands of tokens; within one conversation the earlier part is cached and cheaper. Each
+                    conversation has a token limit, so it never goes past the amount you set.</li>
+            </ul>
+        </section>
+
+        <!-- ================================================== FAQ -->
+        <section id="faq">
+            <h2><span class="i18n-ko">FAQ · 문제 해결</span><span class="i18n-en">FAQ &amp; troubleshooting</span></h2>
+            <div class="tablewrap i18n-ko"><table>
+                <thead><tr><th>증상</th><th>할 일</th></tr></thead>
+                <tbody>
+                    <tr><td>보내도 <em>Accept the data notice first</em></td><td>패널의 <strong>Before you start</strong> 카드에서 <strong>I understand, continue</strong>를 누르거나 설정의 동의 칸을 켭니다.</td></tr>
+                    <tr><td>키 오류, 인증 실패</td><td>설정에서 제공자와 키를 다시 확인합니다. 키 칸 아래에 <em>A key is saved</em> 또는 <em>Not set</em>이 보입니다.</td></tr>
+                    <tr><td><em>Another simulation is running</em></td><td>실행·배치·ScenarioLab·NextDTA는 한 번에 하나만 돕니다. 지금 실행이 끝난 뒤 다시 요청합니다.</td></tr>
+                    <tr><td><em>This conversation reached its token limit</em></td><td>새 대화(<strong>+</strong>)를 시작하거나 설정의 상한을 올립니다.</td></tr>
+                    <tr><td>3D가 열리지 않음</td><td>WebGL을 쓸 수 없는 브라우저입니다. Chrome·Edge 최신판을 쓰세요. 3D는 Run 모드에서만 됩니다.</td></tr>
+                    <tr><td>캡처 파일이 어디 있나요?</td><td>브라우저의 다운로드 폴더입니다. 파일 이름은 <code>nextsim-&lt;네트워크&gt;-t&lt;시각&gt;-&lt;날짜&gt;</code> 꼴입니다.</td></tr>
+                    <tr><td>답이 영어로 나옴</td><td>한국어로 물으면 한국어로 답합니다. / 명령만 쓸 때는 브라우저 언어를 따릅니다.</td></tr>
+                    <tr><td>숫자가 의심스러움</td><td>카드 아래의 실행 정보(네트워크·시나리오·seed)를 확인하고, <strong>Report a wrong answer</strong>로 남겨 주세요.</td></tr>
+                </tbody>
+            </table></div>
+            <div class="tablewrap i18n-en"><table>
+                <thead><tr><th>Symptom</th><th>What to do</th></tr></thead>
+                <tbody>
+                    <tr><td><em>Accept the data notice first</em></td><td>Press <strong>I understand, continue</strong> on the <strong>Before you start</strong> card, or tick the consent box in the settings.</td></tr>
+                    <tr><td>Key or sign-in errors</td><td>Check the provider and key in the settings. Under the key box it says <em>A key is saved</em> or <em>Not set</em>.</td></tr>
+                    <tr><td><em>Another simulation is running</em></td><td>Runs, batches, ScenarioLab and NextDTA share one slot. Ask again when the current one has finished.</td></tr>
+                    <tr><td><em>This conversation reached its token limit</em></td><td>Start a new conversation (<strong>+</strong>) or raise the limit in the settings.</td></tr>
+                    <tr><td>3D does not open</td><td>The browser cannot start WebGL; use a current Chrome or Edge. 3D works in Run mode only.</td></tr>
+                    <tr><td>Where are the captures?</td><td>In the browser's downloads folder, named like <code>nextsim-&lt;network&gt;-t&lt;time&gt;-&lt;date&gt;</code>.</td></tr>
+                    <tr><td>Answers come in the wrong language</td><td>The Assistant answers in the language you write in; a bare / command follows the browser language.</td></tr>
+                    <tr><td>A number looks wrong</td><td>Check the run under the card (network, scenario, seed) and send it with <strong>Report a wrong answer</strong>.</td></tr>
+                </tbody>
+            </table></div>
+        </section>
+
+        <footer>
+            NextSIM Assistant Guide · KAIST AIxMobility Lab —
+            <span class="i18n-ko">결과 재생은 <a href="visualizer-guide.html">Run 모드 가이드</a>, 입력 편집은 <a href="editor-guide.html">Edit 모드 가이드</a>를 보세요.</span>
+            <span class="i18n-en">See the <a href="visualizer-guide.html">Run mode guide</a> for playback and the <a href="editor-guide.html">Edit mode guide</a> for authoring inputs.</span>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // 스크롤 위치에 따라 좌측 목차 활성 표시
+    (function () {
+        const links = Array.from(document.querySelectorAll('#docNav a[href^="#"]'));
+        const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+        const sections = Array.from(document.querySelectorAll('main section[id]'));
+        if (!('IntersectionObserver' in window) || !sections.length) return;
+        let activeId = null;
+        const setActive = (id) => {
+            if (id === activeId) return;
+            activeId = id;
+            links.forEach(a => a.classList.toggle('is-active', a === byId.get(id)));
+        };
+        const observer = new IntersectionObserver((entries) => {
+            const visible = entries.filter(e => e.isIntersecting)
+                .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+            if (visible.length) setActive(visible[0].target.id);
+        }, { rootMargin: '-10% 0px -70% 0px' });
+        sections.forEach(section => observer.observe(section));
+    })();
+
+    // 가이드 간 상호 링크: 로컬 서버에서는 상대 경로, 그 외(공유 아티팩트)에서는 아티팩트 URL
+    (function () {
+        const host = String(window.location.hostname || '');
+        const isLocal = window.location.protocol === 'file:'
+            || host === 'localhost' || host.startsWith('127.')
+            || host.startsWith('10.') || host.startsWith('192.168.')
+            || /^172\.(1[6-9]|2\d|3[01])\./.test(host)
+            || !host.includes('.');
+        document.querySelectorAll('a.doc-cross').forEach(anchor => {
+            const target = isLocal ? anchor.dataset.local : anchor.dataset.artifact;
+            if (target) anchor.setAttribute('href', target);
+        });
+    })();
+
+    // 한/영 전환: 선택을 localStorage 에 남겨 두 가이드가 같은 언어로 열린다.
+    (function () {
+        const root = document.documentElement;
+        const buttons = Array.from(document.querySelectorAll('.lang-switch button[data-lang]'));
+        if (!buttons.length) return;
+        const apply = (lang) => {
+            root.setAttribute('data-lang', lang);
+            root.setAttribute('lang', lang);
+            buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false'));
+            try { window.localStorage.setItem('nextsim-doc-lang', lang); } catch (e) { /* 무시 */ }
+        };
+        apply(root.getAttribute('data-lang') === 'en' ? 'en' : 'ko');
+        buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.lang)));
+    })();
+</script>

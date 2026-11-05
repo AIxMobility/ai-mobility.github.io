@@ -119,6 +119,16 @@
     const panels = Array.from(document.querySelectorAll('.story__panel'));
     const fill = document.querySelector('.story__fill');
     const caption = document.querySelector('.story__caption');
+    // 좁은 화면에서는 고정 화면 대신 단계마다 그림 아래에 같은 수치 띠를 둔다. 한 번 켜지면 켜진 채로 둔다
+    const inline = panels.map((p, k) => {
+        const copy = p.cloneNode(true);
+        copy.classList.remove('is-on');
+        copy.setAttribute('aria-hidden', 'true');
+        copy.querySelectorAll('[data-count]').forEach((el) => { el.textContent = '0'; });
+        const fig = steps[k] && steps[k].querySelector('.story__shot');
+        if (fig) fig.insertBefore(copy, fig.querySelector('figcaption'));
+        return copy;
+    });
     let current = -1;
     let raf = 0;
 
@@ -134,17 +144,18 @@
     };
 
     // 화면 속 재생 시각 08:30:00 에서 출발해 한 시간 구간을 12초에 한 바퀴 돈다
-    const playClock = (panel) => {
-        const clock = panel.querySelector('.story__clock');
-        if (!clock || reduce) return;
-        const head = panel.querySelector('.story__head');
-        const done = panel.querySelector('.story__done');
+    const playClock = (list) => {
+        const parts = list.filter((p) => p.querySelector('.story__clock'));
+        if (!parts.length || reduce) return;
         const t0 = performance.now();
         const tick = (now) => {
             const sec = (1800 + (now - t0) / 12000 * 3600) % 3600;
-            head.style.left = done.style.width = (sec / 36) + '%';
             const t = 8 * 3600 + Math.floor(sec);
-            clock.textContent = [t / 3600, t / 60 % 60, t % 60].map((v) => String(Math.floor(v)).padStart(2, '0')).join(':');
+            const text = [t / 3600, t / 60 % 60, t % 60].map((v) => String(Math.floor(v)).padStart(2, '0')).join(':');
+            parts.forEach((p) => {
+                p.querySelector('.story__head').style.left = p.querySelector('.story__done').style.width = (sec / 36) + '%';
+                p.querySelector('.story__clock').textContent = text;
+            });
             raf = requestAnimationFrame(tick);
         };
         raf = requestAnimationFrame(tick);
@@ -167,10 +178,14 @@
             p.querySelectorAll('.story__bar i').forEach((b) => { b.style.width = k === i ? b.dataset.w + '%' : '0'; });
         });
         const panel = panels[i];
-        if (panel) {
-            panel.querySelectorAll('[data-count]').forEach(countUp);
-            playClock(panel);
+        if (panel) panel.querySelectorAll('[data-count]').forEach(countUp);
+        const copy = inline[i];
+        if (copy && !copy.classList.contains('is-on')) {
+            copy.classList.add('is-on');
+            copy.querySelectorAll('.story__bar i').forEach((b) => { b.style.width = b.dataset.w + '%'; });
+            copy.querySelectorAll('[data-count]').forEach(countUp);
         }
+        playClock([panel, copy].filter(Boolean));
         // 설명은 단계 그림의 figcaption 을 그대로 옮긴다 (한/영 span 포함)
         const cap = steps[i].querySelector('figcaption');
         if (caption && cap) caption.innerHTML = cap.innerHTML;

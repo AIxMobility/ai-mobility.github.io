@@ -207,7 +207,7 @@
     }
 
     .nav__group-label {
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .09em;
@@ -556,6 +556,7 @@
                 <a href="editor-guide.html" aria-current="page"><span class="i18n-ko">3. Edit 모드 가이드</span><span class="i18n-en">3. Edit mode guide</span></a>
                 <a href="visualizer-guide.html"><span class="i18n-ko">4. Run 모드 가이드</span><span class="i18n-en">4. Run mode guide</span></a>
                 <a href="nextci/index.html"><span class="i18n-ko">5. NextCI 가이드</span><span class="i18n-en">5. NextCI guide</span></a>
+                <a href="assistant-guide.html"><span class="i18n-ko">6. Assistant 가이드</span><span class="i18n-en">6. Assistant guide</span></a>
             </div>
             <div class="nav__group">
                 <div class="nav__group-label"><span class="i18n-ko">시작하기</span><span class="i18n-en">Getting started</span></div>
@@ -581,6 +582,7 @@
                 <div class="nav__group-label"><span class="i18n-ko">도구</span><span class="i18n-en">Tools</span></div>
                 <a href="#import-nodelink"><span class="i18n-ko">표준노드링크 가져오기</span><span class="i18n-en">Import standard node-link</span></a>
                 <a href="#import-osm"><span class="i18n-ko">OpenStreetMap 가져오기</span><span class="i18n-en">Import OpenStreetMap</span></a>
+                <a href="#import-sumo"><span class="i18n-ko">SUMO 네트워크 가져오기</span><span class="i18n-en">Import SUMO network</span></a>
                 <a href="#backups"><span class="i18n-ko">저장 백업과 복원</span><span class="i18n-en">Backups &amp; restore</span></a>
                 <a href="#packages"><span class="i18n-ko">패키지와 다른 이름으로 저장</span><span class="i18n-en">Packages &amp; Save as</span></a>
             </div>
@@ -640,9 +642,9 @@
                     대중교통(Station · PT) | 시나리오(Scenario · Events) 순으로 묶여 있고, 좁은 화면(1440px 이하)에서는 아이콘만 남습니다(이름은 툴팁).
                     <strong>우측 끝에는</strong> 저장 상태 · <strong>Revert</strong> · <strong>Save all</strong> · <strong>Save</strong>(현재 워크스페이스용) ·
                     <strong>Setup</strong> · 도움말(물음표, 이 설명서를 엽니다)이 모여 있습니다.
-                    <strong>Setup</strong>을 누르면 상단바가 <strong>Network</strong>(현재 네트워크 이름 표시. 누르면 <strong>Network</strong> 창이 열려
-                    네트워크 선택·추가·패키지 내보내기·다른 이름으로 저장·백업을 할 수 있습니다)과 <strong>Display</strong>(표시 옵션) 줄로 바뀌고,
-                    X 나 <kbd>Esc</kbd>로 돌아옵니다.</li>
+                    <strong>Setup</strong>을 누르면 버튼 아래로 메뉴가 펼쳐지고(상단바는 그대로), <strong>Network</strong>(현재 네트워크 이름 표시. 누르면 <strong>Network</strong> 창이 열려
+                    네트워크 선택·추가·패키지 내보내기·다른 이름으로 저장·백업을 할 수 있습니다)과 <strong>Display</strong>(표시 옵션)를 고를 수 있습니다.
+                    바깥을 누르거나 <kbd>Esc</kbd>로 닫힙니다.</li>
                 <li><strong>도구 패널</strong>: 상단바 바로 아래 중앙에 떠 있는 플로팅 패널로,
                     현재 워크스페이스의 편집 버튼(Add/Reload 등)이 여기에 모여 있습니다.
                     워크스페이스를 바꾸면 패널 내용도 함께 바뀝니다.</li>
@@ -658,9 +660,9 @@
                     demand (OD · Pax) | transit (Station · PT) | scenario (Scenario · Events); on narrow screens (1440px and
                     below) only the icons remain, with names in tooltips. <strong>Right-aligned</strong> at the far end: the
                     save state, <strong>Revert</strong>, <strong>Save all</strong>, <strong>Save</strong> (for the current workspace),
-                    <strong>Setup</strong> and help (question mark, opens this guide). <strong>Setup</strong> turns the bar into
-                    <strong>Network</strong> (shows the current network; it opens the <strong>Network</strong> dialog: selecting,
-                    adding, exporting as a package, save as, backups) and <strong>Display</strong>; X or <kbd>Esc</kbd> returns.</li>
+                    <strong>Setup</strong> and help (question mark, opens this guide). <strong>Setup</strong> opens a menu under
+                    the button (the bar stays as it is) with <strong>Network</strong> (shows the current network; it opens the <strong>Network</strong> dialog: selecting,
+                    adding, exporting as a package, save as, backups) and <strong>Display</strong>; click elsewhere or press <kbd>Esc</kbd> to close it.</li>
                 <li><strong>Tools panel</strong> — a floating panel centred just under the top bar holding the
                     current workspace's edit buttons (Add, Reload, and so on). Its contents change with the
                     workspace.</li>
@@ -802,6 +804,8 @@
                     (<a href="#import-osm">OpenStreetMap 가져오기</a>).</li>
                 <li><strong>Import Korean node-link</strong>: 국가표준노드링크 SHP에서 영역을 잘라 네트워크를 만듭니다
                     (<a href="#import-nodelink">표준노드링크 가져오기</a>). 실제 한국 도로망에서 시작하려면 이쪽이 훨씬 빠릅니다.</li>
+                <li><strong>Import SUMO network</strong>: SUMO <span class="mono">.net.xml</span>(과 신호·수요·정류장 파일)을 변환해
+                    네트워크를 만듭니다 (<a href="#import-sumo">SUMO 네트워크 가져오기</a>).</li>
                 <li><strong>Random network</strong>: 간선·곡선·제거 블록이 섞인 도시형 격자망을 만듭니다. 격자 크기·블록 길이·
                     흔들림·곡률·일방통행 비율과 <em>Entry roads every n-th edge road</em>(가장자리 도로 n개마다 바깥으로
                     나가는 진출입로를 만들며, 그 끝이 수요가 드나드는 terminal 노드가 됩니다. 0이면 만들지 않습니다)를 정합니다. 같은 seed와
@@ -823,6 +827,8 @@
                 <li><strong>Import Korean node-link</strong> — cut an area out of the national standard node-link SHP
                     set (<a href="#import-nodelink">Importing standard node-link data</a>). To start from a real Korean
                     road network, this is far faster.</li>
+                <li><strong>Import SUMO network</strong> — convert a SUMO <span class="mono">.net.xml</span> (plus optional
+                    signal, demand and stop files) into a network (<a href="#import-sumo">Importing a SUMO network</a>).</li>
                 <li><strong>Random network</strong> — a city-like grid with arterials, curves, and removed blocks. You
                     set the grid size, block length, jitter, curvature, one-way share, and <em>Entry roads every n-th
                     edge road</em> (a short road leaving the area on every n-th edge road; its end becomes a terminal
@@ -2622,6 +2628,65 @@
                 <span class="mono">.osm</span> from <a href="https://extract.bbbike.org/" target="_blank" rel="noopener">BBBike</a>
                 into <code>SimulationInput/osm/</code> and use file mode. OSM data is <strong>ODbL 1.0</strong>;
                 attribution is recorded in the folder's <span class="mono">osm_import.json</span>.</div>
+        </section>
+
+        <!-- ================================================== SUMO -->
+        <section id="import-sumo">
+            <h2><span class="i18n-ko">SUMO 네트워크 가져오기</span><span class="i18n-en">Importing a SUMO network</span></h2>
+            <p class="i18n-ko">SUMO에서 만든 망을 NextSIM 네트워크로 옮깁니다. 서버가 저장소의 <code>sumo_converter/</code>(SUMO 변환기의
+                Python 코드)로 변환하며, SUMO 변환기 HTML로 만든 ZIP을 <a href="#packages">패키지</a>로 가져오는 것과 같은 파일이 만들어집니다.</p>
+            <ol class="steps i18n-ko">
+                <li>상단바에서 <strong>Network &#8594; Add network &#8594; Import SUMO network</strong>를 엽니다.</li>
+                <li><strong>Required</strong>의 <strong>Network file</strong>에 SUMO <span class="mono">.net.xml</span> 하나를 끌어다 놓거나 고릅니다.
+                    망 안의 <span class="mono">tlLogic</span>이 신호 계획이 되고, 이름 칸은 파일 이름으로 채워집니다.</li>
+                <li>필요하면 <strong>Optional files</strong>를 넣습니다.
+                    <strong>Signal programs</strong>(<span class="mono">tlLogic</span>이 든 <span class="mono">.add.xml</span>, 최대 8개, 위·아래 버튼으로 적용 순서를 바꿉니다),
+                    <strong>Demand</strong>(<span class="mono">.rou.xml</span>/<span class="mono">.trips.xml</span>: 20분 OD 행렬과 시나리오 0, SUMO 경로는 <span class="mono">Route.json</span>),
+                    <strong>Stops</strong>(<span class="mono">busStop</span>·<span class="mono">trainStop</span> &#8594; <span class="mono">roadStation.xml</span>).</li>
+                <li><strong>Signal schedule (TOD)</strong>와 <strong>Scenario 0</strong>(시작 시각·길이·BGT·V2X·DTA)을 정합니다. 시작과 길이를 비우면 수요가 있는 시간 전체(최대 720분)를 씁니다.</li>
+                <li><strong>Convert &amp; create</strong>를 누르면 새 네트워크가 Edit 모드로 열리고, 창에는 변환 결과와 경고가 남습니다.
+                    맨 위 <em>Next</em> 줄이 Run setup의 <strong>RouteGenerator</strong>를 켤지 알려 줍니다
+                    (SUMO 경로를 그대로 달리려면 끄고, 경로가 없는 OD가 있으면 켭니다). 전체 보고서는 폴더의 <span class="mono">conversion_report.json</span>,
+                    입력 파일과 옵션은 <span class="mono">sumo_import.json</span>에 남습니다.</li>
+            </ol>
+            <div class="warn i18n-ko"><strong>변환하지 않는 것.</strong> SUMO 대중교통 노선(<span class="mono">ptlines.xml</span>, <span class="mono">&lt;ptLine&gt;</span>)은 읽지 않아
+                <span class="mono">roadPTline.xml</span>이 생기지 않습니다. 정류장에는 노선이 없으므로 가져온 뒤 PT 워크스페이스에서 노선을 그립니다.
+                파일 칸에 노선 파일을 넣으면 받지 않고 이 안내를 가리킵니다. 승객(<span class="mono">&lt;person&gt;</span>, <span class="mono">&lt;personFlow&gt;</span>)과
+                차종(<span class="mono">&lt;vType&gt;</span>, NextSIM 기본 <span class="mono">vehicletypes.xml</span>을 씁니다)도 옮기지 않습니다.</div>
+            <div class="tip i18n-ko"><strong>Tip.</strong> <span class="mono">signalTOD.xml</span>은 SUMO에 운영 시간표가 없어 만든 합성 시간표입니다.
+                SUMO 원본에 좌표계(<span class="mono">projParameter</span>)가 있으면 위성 배경 정합(<span class="mono">basemap.json</span>)도 만들어지며,
+                실제 위치와 다르면 그 파일을 지우고 직접 맞춥니다. 변환기는 Python 패키지 <span class="mono">defusedxml</span>이 필요합니다
+                (<code>pip install -r Visualizer/WebVisualization/requirements.txt</code>).</div>
+            <p class="i18n-en">Brings a network built in SUMO into NextSIM. The server converts it with the repository's
+                <code>sumo_converter/</code> (the SUMO converter's Python code), producing the same files as importing the
+                converter HTML's ZIP as a <a href="#packages">package</a>.</p>
+            <ol class="steps i18n-en">
+                <li>Open <strong>Network &#8594; Add network &#8594; Import SUMO network</strong>.</li>
+                <li>Drop or pick one SUMO <span class="mono">.net.xml</span> under <strong>Required &#8594; Network file</strong>.
+                    Its <span class="mono">tlLogic</span> programs become the signal plans; the name is taken from the file name.</li>
+                <li>Add <strong>Optional files</strong> as needed: <strong>Signal programs</strong> (<span class="mono">.add.xml</span> with
+                    <span class="mono">tlLogic</span>, up to 8, reorder with the arrows), <strong>Demand</strong>
+                    (<span class="mono">.rou.xml</span>/<span class="mono">.trips.xml</span>: 20-minute OD matrices and scenario 0, SUMO routes into
+                    <span class="mono">Route.json</span>) and <strong>Stops</strong> (<span class="mono">busStop</span>/<span class="mono">trainStop</span>
+                    &#8594; <span class="mono">roadStation.xml</span>).</li>
+                <li>Choose the <strong>Signal schedule (TOD)</strong> and <strong>Scenario 0</strong> (start, duration, BGT, V2X, DTA).
+                    Empty start and duration cover the whole demand (at most 720 min).</li>
+                <li><strong>Convert &amp; create</strong> opens the new network in Edit mode and keeps the result and the
+                    conversion notes in the dialog. The <em>Next</em> line says whether to turn <strong>RouteGenerator</strong>
+                    in Run setup off (to drive the SUMO routes) or keep it on (OD pairs without a route). The full report is
+                    the folder's <span class="mono">conversion_report.json</span>; inputs and options are in <span class="mono">sumo_import.json</span>.</li>
+            </ol>
+            <div class="warn i18n-en"><strong>Not converted.</strong> SUMO public transport lines
+                (<span class="mono">ptlines.xml</span>, <span class="mono">&lt;ptLine&gt;</span>) are not read and no
+                <span class="mono">roadPTline.xml</span> is made, so stations have no lines — draw them in the PT workspace after
+                the import. A line file dropped on a slot is refused with a pointer to this notice. Passengers
+                (<span class="mono">&lt;person&gt;</span>, <span class="mono">&lt;personFlow&gt;</span>) and vehicle types
+                (<span class="mono">&lt;vType&gt;</span>; NextSIM's default <span class="mono">vehicletypes.xml</span> is used) are not converted either.</div>
+            <div class="tip i18n-en"><strong>Tip.</strong> <span class="mono">signalTOD.xml</span> is a synthetic schedule, since SUMO has
+                no time-of-day table. When the SUMO network has a projection (<span class="mono">projParameter</span>), a satellite
+                alignment (<span class="mono">basemap.json</span>) is written too — delete it if the place is wrong and align by hand.
+                The converter needs the Python package <span class="mono">defusedxml</span>
+                (<code>pip install -r Visualizer/WebVisualization/requirements.txt</code>).</div>
         </section>
 
         <!-- ================================================== Backups -->
