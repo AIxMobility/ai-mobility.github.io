@@ -1,10 +1,13 @@
 (function () {
     const root = document.documentElement;
+    // 독자가 고른 언어(버튼·?lang=)만 남긴다. 사용자 가이드와 같은 키를 쓰고, 예전 키도 함께 써 둔다
+    const CHOICE_KEY = 'nextsim-doc-lang-choice';
     const LANG_KEY = 'nextsim-doc-lang';
     const validLang = value => value === 'ko' || value === 'en' ? value : null;
     const queryLang = () => validLang(new URLSearchParams(window.location.search).get('lang'));
-    const storedLang = () => { try { return validLang(localStorage.getItem(LANG_KEY)); } catch (e) { return null; } };
-    const initialLang = queryLang() || storedLang() || (/^ko\b/i.test(navigator.language || '') ? 'ko' : 'en');
+    const storedLang = () => { try { return validLang(localStorage.getItem(CHOICE_KEY)); } catch (e) { return null; } };
+    const browserLang = () => (/^ko(-|$)/i.test(String((navigator.languages && navigator.languages[0]) || navigator.language || '')) ? 'ko' : 'en');
+    const initialLang = queryLang() || storedLang() || browserLang();
     const buttons = Array.from(document.querySelectorAll('.lang-switch button[data-lang]'));
     const preserveLangInLinks = lang => {
         document.querySelectorAll('a[href]').forEach(link => {
@@ -23,14 +26,17 @@
         });
     };
     const applyLang = (lang, updateUrl) => {
-        lang = validLang(lang) || 'ko';
+        lang = validLang(lang) || 'en';
         root.setAttribute('data-lang', lang);
         root.setAttribute('lang', lang);
         document.querySelectorAll('option[data-ko]').forEach(option => {
             option.textContent = option.dataset[lang];
         });
         buttons.forEach(button => button.setAttribute('aria-pressed', button.dataset.lang === lang ? 'true' : 'false'));
-        try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage can be unavailable */ }
+        // 고른 언어만 남긴다 (처음 열 때 브라우저 언어로 정한 것은 남기지 않는다)
+        if (updateUrl) {
+            try { localStorage.setItem(CHOICE_KEY, lang); localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage can be unavailable */ }
+        }
         if (updateUrl && window.history && window.history.replaceState) {
             const url = new URL(window.location.href);
             url.searchParams.set('lang', lang);

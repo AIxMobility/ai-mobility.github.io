@@ -459,8 +459,8 @@
 
     /* ---------- 한/영 전환 ---------- */
     /* 기본(속성 없음)은 한국어. JS 없이도 한국어 문서로 읽힌다. */
-    :root:not([data-lang="en"]) .i18n-en { display: none !important; }
-    :root[data-lang="en"] .i18n-ko { display: none !important; }
+    :root:not([data-lang="ko"]) .i18n-ko { display: none !important; }
+    :root[data-lang="ko"] .i18n-en { display: none !important; }
 
     .lang-switch {
         display: inline-flex;
